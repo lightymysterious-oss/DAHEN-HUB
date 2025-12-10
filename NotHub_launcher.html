@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NotHub Launcher</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0a2a 0%, #1a1a3a 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Main Container */
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .logo-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #00ffff, #0080ff);
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: bold;
+            color: #000;
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.5);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .logo-glow {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: linear-gradient(135deg, #00ffff, #0080ff);
+            border-radius: 35px;
+            filter: blur(15px);
+            opacity: 0.5;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+        
+        .logo-text {
+            font-size: 42px;
+            font-weight: 900;
+            background: linear-gradient(90deg, #00ffff, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.7);
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #88ffff;
+            font-size: 16px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        
+        /* Status Cards */
+        .status-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .status-card {
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid rgba(0, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .status-card:hover {
+            border-color: #00ffff;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 255, 255, 0.2);
+        }
+        
+        .status-icon {
+            font-size: 28px;
+            color: #00ffff;
+            margin-bottom: 10px;
+        }
+        
+        .status-title {
+            font-size: 14px;
+            color: #88ffff;
+            margin-bottom: 5px;
+        }
+        
+        .status-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        /* Permission Check */
+        .permission-box {
+            background: rgba(255, 87, 87, 0.1);
+            border: 2px solid rgba(255, 87, 87, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .permission-box.active {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .permission-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .permission-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 87, 87, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #ff5757;
+        }
+        
+        .permission-text {
+            flex: 1;
+        }
+        
+        .permission-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ff5757;
+            margin-bottom: 5px;
+        }
+        
+        .permission-desc {
+            font-size: 14px;
+            color: #ffaaaa;
+        }
+        
+        /* Launch Button */
+        .launch-section {
+            margin-top: 30px;
+        }
+        
+        .launch-btn {
+            background: linear-gradient(135deg, #00ffff 0%, #0080ff 100%);
+            border: none;
+            border-radius: 20px;
+            padding: 25px;
+            font-size: 26px;
+            font-weight: bold;
+            color: #000;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.5);
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .launch-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 60px rgba(0, 255, 255, 0.8);
+        }
+        
+        .launch-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .launch-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: linear-gradient(135deg, #666 0%, #888 100%);
+            box-shadow: none;
+        }
+        
+        .launch-btn.disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .shine {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        /* Progress */
+        .progress-container {
+            display: none;
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+        }
+        
+        .progress-container.active {
+            display: block;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #222;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ffff, #0080ff);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 6px;
+        }
+        
+        .progress-text {
+            text-align: center;
+            font-size: 16px;
+            color: #00ffff;
+            margin-bottom: 10px;
+        }
+        
+        .progress-step {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #88ffff;
+            opacity: 0.8;
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #88ffff;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        /* Overlay Menu Preview */
+        .overlay-preview {
+            margin: 20px 0;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            display: none;
+        }
+        
+        .overlay-preview.active {
+            display: block;
+        }
+        
+        .preview-title {
+            text-align: center;
+            font-size: 18px;
+            color: #00ffff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .preview-window {
+            background: rgba(0, 30, 60, 0.9);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid #00ffff;
+        }
+        
+        .preview-header {
+            background: rgba(0, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .preview-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .preview-feature {
+            background: rgba(0, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        /* Settings */
+        .settings-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #00ffff;
+            cursor: pointer;
+            z-index: 100;
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .logo {
+                width: 80px;
+                height: 80px;
+                font-size: 32px;
+            }
+            
+            .logo-text {
+                font-size: 32px;
+            }
+            
+            .launch-btn {
+                padding: 20px;
+                font-size: 22px;
+            }
+            
+            .status-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #00ffff;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Settings Button -->
+    <div class="settings-btn" onclick="openSettings()">
+        <i class="fas fa-cog"></i>
+    </div>
+    
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo-glow"></div>
+                <div class="logo">NH</div>
+            </div>
+            <div class="logo-text">NOTHUB</div>
+            <div class="subtitle">MCPE LAUNCHER</div>
+            <div class="version">v2.0 • Overlay Mod Menu</div>
+        </div>
+        
+        <!-- Status Cards -->
+        <div class="status-cards">
+            <div class="status-card">
+                <div class="status-icon"><i class="fas fa-gamepad"></i></div>
+                <div class="status-title">Minecraft Status</div>
+                <div class="status-value" id="minecraftStatus">Not Detected</div>
+            </div>
+            <div class="status-card">
+                <div class="status-icon"><i class="fas fa-shield-alt"></i></div>
+                <div class="status-title">Overlay Permission</div>
+                <div class="status-value" id="permissionStatus">Checking...</div>
+            </div>
+        </div>
+        
+        <!-- Permission Warning -->
+        <div class="permission-box" id="permissionBox">
+            <div class="permission-header">
+                <div class="permission-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="permission-text">
+                    <div class="permission-title">Overlay Permission Required</div>
+                    <div class="permission-desc">The overlay mod menu needs permission to display over other apps</div>
+                </div>
+            </div>
+            <button class="launch-btn" onclick="requestOverlayPermission()" style="font-size: 18px; padding: 15px;">
+                <i class="fas fa-cog"></i> GRANT PERMISSION NOW
+            </button>
+        </div>
+        
+        <!-- Overlay Preview -->
+        <div class="overlay-preview" id="overlayPreview">
+            <div class="preview-title">
+                <i class="fas fa-eye"></i> Overlay Menu Preview
+            </div>
+            <div class="preview-window">
+                <div class="preview-header">
+                    <span style="color: #00ffff; font-weight: bold;">NOTHUB MENU</span>
+                    <span style="color: #88ffff; font-size: 12px;">v2.0</span>
+                </div>
+                <div class="preview-features">
+                    <div class="preview-feature">KillAura</div>
+                    <div class="preview-feature">Hitbox+</div>
+                    <div class="preview-feature">AutoSprint</div>
+                    <div class="preview-feature">FullBright</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Launch Section -->
+        <div class="launch-section">
+            <button class="launch-btn" id="launchBtn" onclick="launchMinecraft()">
+                <span class="shine"></span>
+                <i class="fas fa-play"></i> LAUNCH MCPE WITH MENU
+            </button>
+            
+            <!-- Progress Bar -->
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-text" id="progressText">Initializing...</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-step">
+                    <span>Permission</span>
+                    <span>Minecraft</span>
+                    <span>Overlay</span>
+                    <span>Launch</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            © 2024 NotHub Client • Overlay Mod Menu System
+            <br>
+            <small>Launches Minecraft PE with floating mod menu</small>
+        </div>
+    </div>
+    
+    <!-- Overlay Menu HTML (Hidden until launched) -->
+    <div id="overlayMenu" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; pointer-events: none;">
+        <div id="overlayContent" style="position: absolute; top: 50px; right: 20px; width: 300px; background: rgba(0, 20, 40, 0.95); border: 2px solid #00ffff; border-radius: 15px; padding: 15px; pointer-events: auto; box-shadow: 0 0 40px rgba(0, 255, 255, 0.5);">
+            <!-- Overlay content will be injected by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            minecraftPackage: "com.mojang.minecraftpe",
+            overlayCheckInterval: 1000,
+            autoRedirectToPermission: true
+        };
+
+        // State
+        let state = {
+            minecraftInstalled: false,
+            overlayPermission: false,
+            isLaunching: false,
+            mods: [
+                { id: 1, name: "KillAura", enabled: true, type: "combat" },
+                { id: 2, name: "Hitbox Expander", enabled: true, type: "combat" },
+                { id: 3, name: "AutoSprint", enabled: false, type: "movement" },
+                { id: 4, name: "FullBright", enabled: false, type: "visual" },
+                { id: 5, name: "Reach Display", enabled: true, type: "visual" },
+                { id: 6, name: "No Hurt Cam", enabled: true, type: "visual" }
+            ]
+        };
+
+        // DOM Elements
+        const elements = {
+            minecraftStatus: document.getElementById('minecraftStatus'),
+            permissionStatus: document.getElementById('permissionStatus'),
+            permissionBox: document.getElementById('permissionBox'),
+            overlayPreview: document.getElementById('overlayPreview'),
+            launchBtn: document.getElementById('launchBtn'),
+            progressContainer: document.getElementById('progressContainer'),
+            progressFill: document.getElementById('progressFill'),
+            progressText: document.getElementById('progressText'),
+            overlayMenu: document.getElementById('overlayMenu'),
+            overlayContent: document.getElementById('overlayContent')
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("NotHub Launcher v2.0 Initializing...");
+            
+            // Start checks
+            checkMinecraft();
+            checkOverlayPermission();
+            
+            // Update UI
+            updateUI();
+            
+            // Show overlay preview after delay
+            setTimeout(() => {
+                elements.overlayPreview.classList.add('active');
+            }, 1000);
+        });
+
+        // Check if Minecraft is installed
+        function checkMinecraft() {
+            console.log("Checking Minecraft installation...");
+            
+            // Try to launch Minecraft to check if installed
+            try {
+                // Create a hidden iframe to test
+                const testFrame = document.createElement('iframe');
+                testFrame.style.display = 'none';
+                testFrame.src = 'minecraft://';
+                document.body.appendChild(testFrame);
+                
+                setTimeout(() => {
+                    document.body.removeChild(testFrame);
+                    state.minecraftInstalled = true;
+                    elements.minecraftStatus.textContent = "Installed";
+                    elements.minecraftStatus.style.color = "#00ff00";
+                    console.log("Minecraft PE detected");
+                }, 100);
+            } catch (e) {
+                state.minecraftInstalled = false;
+                elements.minecraftStatus.textContent = "Not Found";
+                elements.minecraftStatus.style.color = "#ff5757";
+                console.log("Minecraft PE not detected");
+            }
+        }
+
+        // Check overlay permission (simulated - real check needs native bridge)
+        function checkOverlayPermission() {
+            console.log("Checking overlay permission...");
+            
+            // In a real Android WebView, we'd use Android interface
+            // For simulation, we'll check localStorage
+            const hasPermission = localStorage.getItem('nothub_overlay_permission') === 'true';
+            
+            if (hasPermission) {
+                state.overlayPermission = true;
+                elements.permissionStatus.textContent = "Granted";
+                elements.permissionStatus.style.color = "#00ff00";
+                elements.permissionBox.classList.remove('active');
+            } else {
+                state.overlayPermission = false;
+                elements.permissionStatus.textContent = "Required";
+                elements.permissionStatus.style.color = "#ff5757";
+                elements.permissionBox.classList.add('active');
+                
+                // Auto redirect to permission settings if configured
+                if (CONFIG.autoRedirectToPermission) {
+                    setTimeout(() => {
+                        if (!state.overlayPermission && !state.isLaunching) {
+                            console.log("Auto-redirecting to permission settings...");
+                            showPermissionInstructions();
+                        }
+                    }, 3000);
+                }
+            }
+        }
+
+        // Request overlay permission
+        function requestOverlayPermission() {
+            console.log("Opening permission settings...");
+            
+            // In a real app, this would open Android settings
+            // For simulation, we'll show instructions
+            showPermissionInstructions();
+        }
+
+        // Show permission instructions
+        function showPermissionInstructions() {
+            const instructions = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; display: flex; align-items: center; justify-content: center;">
+                    <div style="background: #1a1a3a; padding: 30px; border-radius: 20px; border: 3px solid #00ffff; max-width: 90%; max-height: 90%; overflow-y: auto;">
+                        <h2 style="color: #00ffff; margin-bottom: 20px; text-align: center;">
+                            <i class="fas fa-cog"></i> Enable Overlay Permission
+                        </h2>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <div style="background: rgba(0,255,255,0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                                <h3 style="color: #00ffff; margin-bottom: 10px;">1. Go to Android Settings</h3>
+                                <p style="color: #88ffff;">Open your device's Settings app</p>
+                            </div>
+                            
+                            <div style="background: rgba(0,255,255,0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                                <h3 style="color: #00ffff; margin-bottom: 10px;">2. Find Apps</h3>
+                                <p style="color: #88ffff;">Tap on "Apps" or "Applications"</p>
+                            </div>
+                            
+                            <div style="background: rgba(0,255,255,0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                                <h3 style="color: #00ffff; margin-bottom: 10px;">3. Select NotHub Launcher</h3>
+                                <p style="color: #88ffff;">Find and tap on "NotHub Launcher"</p>
+                            </div>
+                            
+                            <div style="background: rgba(0,255,255,0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                                <h3 style="color: #00ffff; margin-bottom: 10px;">4. Enable Over Other Apps</h3>
+                                <p style="color: #88ffff;">Tap "Display over other apps" and enable it</p>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px;">
+                            <button onclick="simulatePermissionGrant()" style="flex: 1; background: #00ffff; color: #000; border: none; padding: 15px; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer;">
+                                <i class="fas fa-check"></i> I've Enabled It
+                            </button>
+                            <button onclick="closeInstructions()" style="flex: 1; background: #ff5757; color: white; border: none; padding: 15px; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer;">
+                                <i class="fas fa-times"></i> Close
+                            </button>
+                        </div>
+                        
+                        <p style="color: #88ffff; margin-top: 15px; font-size: 12px; text-align: center;">
+                            After enabling, restart this launcher
+                        </p>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', instructions);
+        }
+
+        // Simulate permission grant (for demo)
+        window.simulatePermissionGrant = function() {
+            localStorage.setItem('nothub_overlay_permission', 'true');
+            alert("Permission granted! The overlay menu will now work in Minecraft.");
+            location.reload();
+        };
+
+        window.closeInstructions = function() {
+            const overlay = document.querySelector('div[style*="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95);"]');
+            if (overlay) {
+                overlay.remove();
+            }
+        };
+
+        // Update UI based on state
+        function updateUI() {
+            if (state.minecraftInstalled && state.overlayPermission) {
+                elements.launchBtn.classList.remove('disabled');
+                elements.launchBtn.innerHTML = `<span class="shine"></span><i class="fas fa-play"></i> LAUNCH MCPE WITH OVERLAY`;
+            } else {
+                elements.launchBtn.classList.add('disabled');
+                elements.launchBtn.innerHTML = `<i class="fas fa-lock"></i> CHECK REQUIREMENTS`;
+            }
+        }
+
+        // Launch Minecraft with overlay
+        async function launchMinecraft() {
+            if (state.isLaunching) return;
+            
+            // Check requirements
+            if (!state.minecraftInstalled) {
+                alert("Minecraft PE not found! Please install Minecraft PE first.");
+                return;
+            }
+            
+            if (!state.overlayPermission) {
+                alert("Overlay permission required! Please grant permission first.");
+                requestOverlayPermission();
+                return;
+            }
+            
+            state.isLaunching = true;
+            elements.launchBtn.classList.add('disabled');
+            elements.progressContainer.classList.add('active');
+            
+            // Launch sequence
+            const steps = [
+                { progress: 10, text: "Checking permissions..." },
+                { progress: 30, text: "Starting overlay service..." },
+                { progress: 50, text: "Preparing mod menu..." },
+                { progress: 70, text: "Launching Minecraft PE..." },
+                { progress: 90, text: "Activating overlay..." },
+                { progress: 100, text: "Ready! Overlay active" }
+            ];
+            
+            for (let i = 0; i < steps.length; i++) {
+                const step = steps[i];
+                elements.progressFill.style.width = step.progress + '%';
+                elements.progressText.textContent = step.text;
+                
+                // Special actions for certain steps
+                if (i === 3) { // Launch Minecraft
+                    try {
+                        window.location.href = "minecraft://";
+                        console.log("Minecraft launched");
+                        
+                        // Wait a bit for Minecraft to load
+                        await sleep(2000);
+                    } catch (e) {
+                        console.error("Failed to launch Minecraft:", e);
+                    }
+                }
+                
+                if (i === 4) { // Activate overlay
+                    // Show overlay menu
+                    activateOverlayMenu();
+                }
+                
+                await sleep(800);
+            }
+            
+            // Hide progress after completion
+            setTimeout(() => {
+                elements.progressContainer.classList.remove('active');
+                elements.launchBtn.classList.remove('disabled');
+                state.isLaunching = false;
+            }, 2000);
+        }
+
+        // Activate overlay menu
+        function activateOverlayMenu() {
+            console.log("Activating overlay menu...");
+            
+            // Create overlay content
+            const overlayHTML = `
+                <div style="color: white;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #00ffff;">
+                        <div style="font-size: 20px; font-weight: bold; color: #00ffff;">
+                            <i class="fas fa-gamepad"></i> NOTHUB MENU
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button onclick="toggleOverlay()" style="background: #ff5757; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <div style="color: #88ffff; font-size: 12px; margin-bottom: 5px;">ACTIVE MODS:</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            ${state.mods.map(mod => `
+                                <div style="background: ${mod.enabled ? 'rgba(0,255,0,0.2)' : 'rgba(255,0,0,0.2)'}; 
+                                            border: 1px solid ${mod.enabled ? '#00ff00' : '#ff0000'}; 
+                                            border-radius: 8px; padding: 10px; text-align: center; cursor: pointer;"
+                                     onclick="toggleMod(${mod.id})">
+                                    <div style="font-size: 14px; font-weight: bold;">${mod.name}</div>
+                                    <div style="font-size: 10px; color: ${mod.enabled ? '#00ff00' : '#ff0000'}">
+                                        ${mod.enabled ? 'ENABLED' : 'DISABLED'}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div style="background: rgba(0,255,255,0.1); border-radius: 10px; padding: 10px; margin-bottom: 15px;">
+                        <div style="color: #00ffff; font-size: 12px; margin-bottom: 5px;">QUICK ACTIONS:</div>
+                        <div style="display: flex; gap: 10px;">
+                            <button onclick="executeCommand('killaura')" style="flex: 1; background: rgba(255,0,0,0.5); color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer;">
+                                KillAura
+                            </button>
+                            <button onclick="executeCommand('fullbright')" style="flex: 1; background: rgba(255,255,0,0.5); color: black; border: none; padding: 8px; border-radius: 5px; cursor: pointer;">
+                                FullBright
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div style="color: #88ffff; font-size: 10px; text-align: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(0,255,255,0.3);">
+                        Drag to move • Tap outside to hide
+                    </div>
+                </div>
+            `;
+            
+            elements.overlayContent.innerHTML = overlayHTML;
+            elements.overlayMenu.style.display = 'block';
+            
+            // Make overlay draggable
+            makeDraggable(elements.overlayContent);
+        }
+
+        // Make element draggable
+        function makeDraggable(element) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            
+            element.onmousedown = dragMouseDown;
+            element.ontouchstart = dragTouchStart;
+            
+            function dragMouseDown(e) {
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+            
+            function dragTouchStart(e) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                pos3 = touch.clientX;
+                pos4 = touch.clientY;
+                document.ontouchend = closeDragElement;
+                document.ontouchmove = elementDragTouch;
+            }
+            
+            function elementDrag(e) {
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                element.style.top = (element.offsetTop - pos2) + "px";
+                element.style.left = (element.offsetLeft - pos1) + "px";
+            }
+            
+            function elementDragTouch(e) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                pos1 = pos3 - touch.clientX;
+                pos2 = pos4 - touch.clientY;
+                pos3 = touch.clientX;
+                pos4 = touch.clientY;
+                element.style.top = (element.offsetTop - pos2) + "px";
+                element.style.left = (element.offsetLeft - pos1) + "px";
+            }
+            
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+                document.ontouchend = null;
+                document.ontouchmove = null;
+            }
+        }
+
+        // Global functions for overlay
+        window.toggleOverlay = function() {
+            elements.overlayMenu.style.display = elements.overlayMenu.style.display === 'none' ? 'block' : 'none';
+        };
+
+        window.toggleMod = function(id) {
+            const mod = state.mods.find(m => m.id === id);
+            if (mod) {
+                mod.enabled = !mod.enabled;
+                activateOverlayMenu(); // Refresh overlay
+            }
+        };
+
+        window.executeCommand = function(cmd) {
+            alert(`Command executed: ${cmd}`);
+        };
+
+        // Click outside to hide overlay
+        document.addEventListener('click', function(e) {
+            if (elements.overlayMenu.style.display === 'block' && 
+                !elements.overlayContent.contains(e.target)) {
+                elements.overlayMenu.style.display = 'none';
+            }
+        });
+
+        // Open settings
+        function openSettings() {
+            const settingsHTML = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; display: flex; align-items: center; justify-content: center;">
+                    <div style="background: #1a1a3a; padding: 30px; border-radius: 20px; border: 3px solid #00ffff; max-width: 90%; max-height: 90%; overflow-y: auto; width: 400px;">
+                        <h2 style="color: #00ffff; margin-bottom: 20px; text-align: center;">
+                            <i class="fas fa-cog"></i> Settings
+                        </h2>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <div style="background: rgba(0,255,255,0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                                <h3 style="color: #00ffff; margin-bottom: 10px;">Auto Permission Check</h3>
+                                <label style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="color: white;">Auto-redirect to settings</span>
+                                    <input type="checkbox" id="autoRedirect" ${CONFIG.autoRedirectToPermission ? 'checked' : ''} 
+                                           style="width: 20px; height: 20px;">
+                                </label>
+                            </div>
+                            
+                            <div style="background: rgba(0,255,255,0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                                <h3 style="color: #00ffff; margin-bottom: 10px;">Overlay Settings</h3>
+                                <div style="color: white; margin-bottom: 10px;">
+                                    <div>Overlay Position: <select id="overlayPos" style="background: #000; color: white; border: 1px solid #00ffff; padding: 5px; border-radius: 5px;">
+                                        <option>Top Right</option>
+                                        <option>Top Left</option>
+                                        <option>Bottom Right</option>
+                                        <option>Bottom Left</option>
+                                    </select></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px;">
+                            <button onclick="saveSettings()" style="flex: 1; background: #00ffff; color: #000; border: none; padding: 15px; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer;">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button onclick="closeSettings()" style="flex: 1; background: #ff5757; color: white; border: none; padding: 15px; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer;">
+                                <i class="fas fa-times"></i> Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', settingsHTML);
+        }
+
+        window.saveSettings = function() {
+            const autoRedirect = document.getElementById('autoRedirect').checked;
+            CONFIG.autoRedirectToPermission = autoRedirect;
+            localStorage.setItem('nothub_auto_redirect', autoRedirect);
+            alert("Settings saved!");
+            closeSettings();
+        };
+
+        window.closeSettings = function() {
+            const settings = document.querySelector('div[style*="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95);"]');
+            if (settings) {
+                settings.remove();
+            }
+        };
+
+        // Utility functions
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Auto-refresh permission status
+        setInterval(() => {
+            if (!state.overlayPermission && !state.isLaunching) {
+                checkOverlayPermission();
+            }
+        }, 5000);
+
+    </script>
+</body>
+</html>
