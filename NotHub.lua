@@ -53,6 +53,6 @@ ButtonCorner.CornerRadius = UDim.new(0, 8)
 ButtonCorner.Parent = Button
 
 Button.MouseButton1Click:Connect(function()
-    setclipboard("https://discord.gg/g4zgYBqC")
+    setclipboard("https://discord.gg/Tt35gKp3qR")
     Button.Text = "Link copied!"
 end)
