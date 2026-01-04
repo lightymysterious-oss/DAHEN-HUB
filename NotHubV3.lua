@@ -253,7 +253,7 @@ end
 animateEntrance()
 
 GetScriptButton.MouseButton1Click:Connect(function()
-    setclipboard("https://discord.gg/mVbn7PN3")
+    setclipboard("https://discord.gg/Tt35gKp3qR")
     GetScriptButton.Text = "Link Copied!"
     GetScriptButton.BackgroundColor3 = Color3.fromRGB(67, 181, 129)
     
